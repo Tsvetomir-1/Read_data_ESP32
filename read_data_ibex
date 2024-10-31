@@ -17,7 +17,7 @@ def display_table():
 
         # Select the desired table (assuming it’s at index 3) and drop unnecessary columns
         df = tables[3].drop(columns=[4, 5, 6], errors='ignore')
-
+        df.columns = ["Date Time", "Date Display", "Price EUR", "Price", "Volume"]
         # Convert DataFrame to an HTML table with Bootstrap classes
         table_html = df.to_html(classes='table table-striped table-bordered', index=False)
 
