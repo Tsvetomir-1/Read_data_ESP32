@@ -20,16 +20,13 @@ def display_table():
         
        
         # Convert 'Date Time' column to datetime format
-        df['Date Time'] = pd.to_datetime(df['Date Time'])
+        df['Date Time'] = pd.to_datetime(df['Date Time'], format='%Y-%m-%d')
         
         # Get the current date and hour
-        current_datetime = datetime.now()
-        current_date = current_datetime.date()
-        current_hour = current_datetime.hour
+     current_date = datetime.now().date()
         
         # Filter rows that match the current date and hour
-        df_filtered = df[(df['Date Time'].dt.date == current_date) & 
-                         (df['Date Time'].dt.hour == current_hour)]
+        df_filtered = df[(df['Date Time'].dt.date == current_date)]
         
         # Convert the filtered DataFrame to an HTML table with Bootstrap classes
         table_html = df_filtered.to_html(classes='table table-striped table-bordered', index=False)
