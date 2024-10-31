@@ -1,7 +1,7 @@
-
 from flask import Flask, render_template_string
 import requests
 import pandas as pd
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -14,19 +14,34 @@ def display_table():
     if response.status_code == 200:
         # Extract tables from the HTML
         tables = pd.read_html(response.text)
-
-        # Select the desired table (assuming it’s at index 3) and drop unnecessary columns
+        
+        # Select the desired table (assuming it’s at index 3)
         df = tables[3].drop(columns=[4, 5, 6], errors='ignore')
+        
+        # Rename columns with custom names
         df.columns = ["Date Time", "Date Display", "Price EUR", "Price", "Volume"]
-        # Convert DataFrame to an HTML table with Bootstrap classes
-        table_html = df.to_html(classes='table table-striped table-bordered', index=False)
-
+        
+        # Convert 'Date Time' column to datetime format
+        df['Date Time'] = pd.to_datetime(df['Date Time'])
+        
+        # Get the current date and hour
+        current_datetime = datetime.now()
+        current_date = current_datetime.date()
+        current_hour = current_datetime.hour
+        
+        # Filter rows that match the current date and hour
+        df_filtered = df[(df['Date Time'].dt.date == current_date) & 
+                         (df['Date Time'].dt.hour == current_hour)]
+        
+        # Convert the filtered DataFrame to an HTML table with Bootstrap classes
+        table_html = df_filtered.to_html(classes='table table-striped table-bordered', index=False)
+        
         # HTML template for rendering
         html_template = f"""
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Table Extraction</title>
+            <title>Filtered Market Data</title>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
             <style>
                 body {{ margin: 20px; }}
@@ -34,9 +49,9 @@ def display_table():
             </style>
         </head>
         <body>
-            <h1>Extracted Market Data Table</h1>
+            <h1>Market Data for {current_date} at Hour {current_hour}:00</h1>
             <div class="table-wrapper">
-                {table_html}
+                {table_html if not df_filtered.empty else "<p>No data available for the current date and time.</p>"}
             </div>
         </body>
         </html>
@@ -47,4 +62,3 @@ def display_table():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
