@@ -18,15 +18,15 @@ def display_table():
         # Select the desired table (assuming it’s at index 3)
         df = tables[3].drop(columns=[4, 5, 6], errors='ignore')
         
-       
         # Convert 'Date Time' column to datetime format
         df['Date Time'] = pd.to_datetime(df['Date Time'], format='%Y-%m-%d')
         
         # Get the current date and hour
-     current_date = datetime.now().date()
-        
-        # Filter rows that match the current date and hour
-        df_filtered = df[(df['Date Time'].dt.date == current_date)]
+        current_date = datetime.now().date()
+        current_hour = datetime.now().hour
+
+        # Filter rows that match the current date
+        df_filtered = df[df['Date Time'].dt.date == current_date]
         
         # Convert the filtered DataFrame to an HTML table with Bootstrap classes
         table_html = df_filtered.to_html(classes='table table-striped table-bordered', index=False)
@@ -44,9 +44,9 @@ def display_table():
             </style>
         </head>
         <body>
-            <h1>Market Data for {current_date} at Hour {current_hour}:00</h1>
+            <h1>Market Data for {current_date}</h1>
             <div class="table-wrapper">
-                {table_html if not df_filtered.empty else "<p>No data available for the current date and time.</p>"}
+                {table_html if not df_filtered.empty else "<p>No data available for the current date.</p>"}
             </div>
         </body>
         </html>
