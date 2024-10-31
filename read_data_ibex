@@ -18,9 +18,7 @@ def display_table():
         # Select the desired table (assuming it’s at index 3)
         df = tables[3].drop(columns=[4, 5, 6], errors='ignore')
         
-        # Rename columns with custom names
-        df.columns = ["Date Time", "Date Display", "Price EUR", "Price", "Volume"]
-        
+       
         # Convert 'Date Time' column to datetime format
         df['Date Time'] = pd.to_datetime(df['Date Time'])
         
