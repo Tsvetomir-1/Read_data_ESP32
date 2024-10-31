@@ -18,15 +18,20 @@ def display_table():
         # Select the desired table (assuming it’s at index 3)
         df = tables[3].drop(columns=[4, 5, 6], errors='ignore')
         
-        # Convert 'Date Time' column to datetime format
-        df['Date Time'] = pd.to_datetime(df['Date Time'], format='%Y-%m-%d')
+        # Debug: Print first few rows to inspect format
+        print("Initial Data Sample:", df.head())
         
-        # Get the current date and hour
+        # Convert 'Date Time' column to datetime format, ignoring time
+        df['Date Time'] = pd.to_datetime(df['Date Time'], errors='coerce').dt.date
+        
+        # Debug: Print converted dates
+        print("Converted Dates:", df['Date Time'].head())
+        
+        # Get the current date
         current_date = datetime.now().date()
-        current_hour = datetime.now().hour
 
         # Filter rows that match the current date
-        df_filtered = df[df['Date Time'].dt.date == current_date]
+        df_filtered = df[df['Date Time'] == current_date]
         
         # Convert the filtered DataFrame to an HTML table with Bootstrap classes
         table_html = df_filtered.to_html(classes='table table-striped table-bordered', index=False)
